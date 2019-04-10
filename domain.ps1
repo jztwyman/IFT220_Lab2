@@ -10,7 +10,6 @@ Write-Host -ForegroundColor yellow $nicname
 $ ipaddress = Get-NetIPAddress -InterfaceAlias $nicname -AddressFamily IPv4 | select -ExpandProperty "IPAddress"
 $ prefixlength = Get-NetIPAddress -InterfaceAlias $nicname -AddressFamily IPv4 | select -ExpandProperty "PrefixLength"
 $ gateway = Get-NetIPConfiguration -InterfaceAlias $nicname | select -ExpandProperty "IPv4DefaultGateway" | select -ExpandProperty "NextHop"
-#I was unable to create a variable for the default gateway due to an error with the InterfaceAlias value type System.String.
 Write-Host -ForegroundColor yellow $ipaddress/$prefixlength 
 Write-Host -ForegroundColor yellow $gateway 
 
@@ -18,12 +17,10 @@ Write-Host -ForegroundColor yellow $gateway
 Remove-NetIPAddress -InterfaceAlias $nicname -AddressFamily IPv4 -Confirm:$false
 # Remove-NetRoute -InterfaceAlias $nicname -AddressFamily IPv4 -Confirm:$false
 New-NetIPAddress -InterfaceAlias $nicname -IPAddress $ipaddress -AddressFamily IPv4 -PrefixLength $prefixlength -DefaultGateway $gateway
-#Same issue here that I had previously.
 
 # Set the DNS address to ourselves
 Set-DnsClientServerAddress -InterfaceAlias $nicname -ServerAddresses ($ipaddress)
 Get-DnsClientServerAddress -InterfaceAlias $nicname -AddressFamily IPv4 | select -ExpandProperty "ServerAddresses"
-#This worked fine.
 
 
 # Make sure the timezone is set correctly
@@ -49,6 +46,5 @@ Write-Host -ForegroundColor Red "After you supply the SafeModeAdministratorPassw
 
 Install-WindowsFeature AD-Domain-Services -IncludeManagementTools | Out-Null
 Install-ADDSForest -DomainName $domainname
-#UNABLE to install WindowsFeatue and ADDSForest. The machine did not reboot.
 
 # the machine will now reboot
